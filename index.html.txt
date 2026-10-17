@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makam & Ritim Ustası - Türk Musikisi Oyunu</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            DEFAULT: '#D4AF37',
+                            light: '#F3E5AB',
+                            dark: '#AA7C11',
+                            glow: '#FFE57F'
+                        },
+                        oriental: {
+                            bg: '#0D0B14',
+                            card: '#181524',
+                            accent: '#2A233D',
+                            red: '#8B0000',
+                            emerald: '#004B3E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Canvas Confetti -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+   
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D0B14;
+            color: #E2E8F0;
+            user-select: none;
+            overflow-x: hidden;
+        }
+        .font-serif-title {
+            font-family: 'Cinzel', serif;
+        }
+        .gold-border {
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+        .glass-panel {
+            background: rgba(24, 21, 36, 0.82);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D0B14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2A233D;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+        .avatar-locked {
+            filter: grayscale(100%) brightness(40%);
+        }
+        @keyframes unlockPulse {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .unlock-anim {
+            animation: unlockPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-100 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-oriental-accent via-oriental-bg to-black">
+
+    <header class="w-full glass-panel sticky top-0 z-50 border-b border-gold/30 px-3 py-2.5 sm:px-6">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+           
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('menu')">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-gold-dark via-gold to-gold-light flex items-center justify-center text-black font-extrabold text-xl shadow-lg shadow-gold/20">
+                    <i class="fa-solid fa-drum"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif-title font-extrabold text-base sm:text-lg text-gradient bg-gradient-to-r from-gold-light via-gold to-yellow-500 bg-clip-text text-transparent" data-i18n="app_title">MAKAM & RİTİM USTASI</h1>
+                    <p class="text-[10px] text-gold/70 -mt-1 tracking-widest uppercase" data-i18n="app_subtitle">Türk Musikisi Oyunu</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="hidden lg:flex space-x-1">
+                <button onclick="switchTab('rhythm')" class="px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-gold/20 flex items-center space-x-1.5 border border-transparent hover:border-gold/40 transition-all">
+                    <i class="fa-solid fa-circle-play text-gold"></i>
+                    <span data-i18n="nav_rhythm">Usülünü Yakala!</span>
+                </button>
+                <button onclick="switchTab('quiz')" class="px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-gold/20 flex items-center space-x-1.5 border border-transparent hover:border-gold/40 transition-all">
+                    <i class="fa-solid fa-compact-disc text-gold"></i>
+                    <span data-i18n="nav_quiz">Makam Testi</span>
+                </button>
+                <button onclick="switchTab('studio')" class="px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-gold/20 flex items-center space-x-1.5 border border-transparent hover:border-gold/40 transition-all">
+                    <i class="fa-solid fa-sliders text-gold"></i>
+                    <span data-i18n="nav_studio">Meşk Odası</span>
+                </button>
+            </nav>
+
+            <!-- Right Controls: Score, Profile Avatar & Language Selector -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+               
+                <!-- Score & Level Badge -->
+                <div class="bg-black/50 border border-gold/30 px-2.5 py-1 rounded-full flex items-center space-x-1.5 text-xs">
+                    <i class="fa-solid fa-trophy text-gold"></i>
+                    <span id="global-score" class="text-gold font-bold">0</span>
+                    <span class="text-slate-500">|</span>
+                    <span class="text-slate-300">Lvl <span id="user-level" class="text-emerald-400 font-bold">1</span></span>
+                </div>
+
+                <!-- Profile & Avatar Selector Trigger -->
+                <button onclick="openAvatarModal()" class="flex items-center space-x-2 bg-black/60 border border-gold/40 hover:border-gold px-2 py-1 rounded-full transition-all group">
+                    <span id="header-avatar" class="text-xl group-hover:scale-110 transition-transform">👳</span>
+                    <span id="header-username" class="text-xs font-bold text-slate-200 max-w-[80px] truncate hidden sm:inline">Neyzen</span>
+                </button>
+
+                <!-- Audio Toggle -->
+                <button id="audio-init-btn" onclick="initAudioEngine()" class="bg-gold hover:bg-gold-light text-slate-950 font-bold px-2.5 py-1 rounded-full text-xs transition-all flex items-center space-x-1">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span id="audio-btn-text" class="hidden sm:inline" data-i18n="audio_on">Sesi Aç</span>
+                </button>
+
+                <!-- Multi-Language Selector Dropdown -->
+                <div class="relative">
+                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-black/80 text-gold border border-gold/40 rounded-full px-2 py-1 text-xs font-bold focus:outline-none cursor-pointer">
+                        <option value="tr">🇹🇷 TR</option>
+                        <option value="en">🇬🇧 EN</option>
+                        <option value="de">🇩🇪 DE</option>
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="es">🇪🇸 ES</option>
+                        <option value="ar">🇸🇦 AR</option>
+                        <option value="ja">🇯🇵 JA</option>
+                        <option value="ru">🇷🇺 RU</option>
+                        <option value="az">🇦🇿 AZ</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl w-full mx-auto p-3 sm:p-6 flex-grow flex flex-col justify-center">
+
+        <!-- ================= MAIN MENU ================= -->
+        <section id="tab-menu" class="tab-content transition-opacity duration-300">
+            <div class="text-center my-4 sm:my-8 max-w-2xl mx-auto">
+                <span class="px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-widest bg-gold/10 border border-gold/30 text-gold mb-3 inline-block" data-i18n="hero_tag">
+                    Geleneksel & İnteraktif
+                </span>
+                <h2 class="font-serif-title text-2xl sm:text-4xl font-extrabold text-slate-100 mb-3 leading-tight" data-i18n="hero_title">
+                    Türk Musikisinin Büyülü Ritim ve Melodileri
+                </h2>
+                <p class="text-slate-400 text-xs sm:text-sm mb-6" data-i18n="hero_desc">
+                    Etkinlikleri tamamla, XP kazanarak 50 farklı geleneksel Türk Musikisi avatarının kilidini aç!
+                </p>
+
+                <!-- Profile Quick Overview Banner -->
+                <div class="glass-panel p-4 rounded-2xl border border-gold/30 flex items-center justify-between max-w-lg mx-auto mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div id="banner-avatar" class="text-4xl bg-black/40 p-2 rounded-xl border border-gold/30">👳</div>
+                        <div class="text-left">
+                            <h4 id="banner-username" class="font-bold text-gold text-base">Neyzen Musikişinas</h4>
+                            <p class="text-xs text-slate-400"><span data-i18n="unlocked_avatars">Açılan Avatarlar</span>: <span id="banner-avatar-count" class="text-emerald-400 font-bold">3</span> / 50</p>
+                        </div>
+                    </div>
+                    <button onclick="openAvatarModal()" class="bg-gold/20 hover:bg-gold/30 border border-gold/40 text-gold text-xs font-bold px-3 py-2 rounded-xl transition-all" data-i18n="btn_edit_profile">
+                        <i class="fa-solid fa-user-pen mr-1"></i> Profili Düzenle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Mode Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-2">
+                <!-- Rhythm Game -->
+                <div onclick="switchTab('rhythm')" class="glass-panel p-5 rounded-2xl hover:border-gold cursor-pointer transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-3 group-hover:bg-gold group-hover:text-black transition-colors">
+                        <i class="fa-solid fa-drum"></i>
+                    </div>
+                    <h3 class="font-serif-title text-lg font-bold text-gold mb-1" data-i18n="nav_rhythm">Usülünü Yakala!</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-4" data-i18n="card_rhythm_desc">
+                        Sofyan, Aksak 9/8, Curcuna ve Düyek usüllerinde düşen ritimleri doğru zamanda yakala, kombo yap!
+                    </p>
+                    <span class="inline-flex items-center text-xs font-bold text-gold group-hover:translate-x-1 transition-transform">
+                        <span data-i18n="btn_play">Oyuna Başla</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </span>
+                </div>
+
+                <!-- Ear Quiz -->
+                <div onclick="switchTab('quiz')" class="glass-panel p-5 rounded-2xl hover:border-gold cursor-pointer transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-3 group-hover:bg-gold group-hover:text-black transition-colors">
+                        <i class="fa-solid fa-ear-listen"></i>
+                    </div>
+                    <h3 class="font-serif-title text-lg font-bold text-gold mb-1" data-i18n="nav_quiz">Makam & Saz Testi</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-4" data-i18n="card_quiz_desc">
+                        Sentezlenen Ney, Kanun, Ud seslerini ve Rast, Hicaz, Nihavend makamlarını dinleyip doğru tahmin et!
+                    </p>
+                    <span class="inline-flex items-center text-xs font-bold text-gold group-hover:translate-x-1 transition-transform">
+                        <span data-i18n="btn_start_test">Testi Başlat</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </span>
+                </div>
+
+                <!-- Meşk Studio -->
+                <div onclick="switchTab('studio')" class="glass-panel p-5 rounded-2xl hover:border-gold cursor-pointer transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-3 group-hover:bg-gold group-hover:text-black transition-colors">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3 class="font-serif-title text-lg font-bold text-gold mb-1" data-i18n="nav_studio">Meşk Odası</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-4" data-i18n="card_studio_desc">
+                        Koma ve çeyrek tonlu mikrotonal Türk musikisi skalalarında sanal enstrümanları özgürce çal!
+                    </p>
+                    <span class="inline-flex items-center text-xs font-bold text-gold group-hover:translate-x-1 transition-transform">
+                        <span data-i18n="btn_enter_studio">Stüdyoya Gir</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 1. RHYTHM GAME TAB ================= -->
+        <section id="tab-rhythm" class="tab-content hidden transition-opacity duration-300">
+            <div class="flex flex-col lg:flex-row gap-5 items-start">
+               
+                <!-- Game Settings Sidebar -->
+                <div class="w-full lg:w-1/3 glass-panel p-4 rounded-2xl border border-gold/30">
+                    <h3 class="font-serif-title text-base font-bold text-gold mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-sliders mr-2"></i><span data-i18n="select_pattern">Usül Seçimi</span></span>
+                    </h3>
+
+                    <div class="space-y-2 mb-4">
+                        <button onclick="selectRhythmPattern('sofyan')" id="pattern-btn-sofyan" class="pattern-btn w-full p-2.5 rounded-xl border border-gold/40 bg-gold/10 text-left flex justify-between items-center transition-all">
+                            <div>
+                                <div class="font-bold text-xs text-gold-light">Sofyan (4/4)</div>
+                                <div class="text-[10px] text-slate-400" data-i18n="sofyan_desc">Temel & Hareketli</div>
+                            </div>
+                            <span class="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded text-gold">Düm-Tek-Tek</span>
+                        </button>
+
+                        <button onclick="selectRhythmPattern('aksak')" id="pattern-btn-aksak" class="pattern-btn w-full p-2.5 rounded-xl border border-white/10 bg-black/20 text-left flex justify-between items-center transition-all">
+                            <div>
+                                <div class="font-bold text-xs text-slate-200">Aksak (9/8)</div>
+                                <div class="text-[10px] text-slate-400" data-i18n="aksak_desc">Coşkulu 9/8</div>
+                            </div>
+                            <span class="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded text-gold">9/8 Aksak</span>
+                        </button>
+
+                        <button onclick="selectRhythmPattern('curcuna')" id="pattern-btn-curcuna" class="pattern-btn w-full p-2.5 rounded-xl border border-white/10 bg-black/20 text-left flex justify-between items-center transition-all">
+                            <div>
+                                <div class="font-bold text-xs text-slate-200">Curcuna (10/8)</div>
+                                <div class="text-[10px] text-slate-400" data-i18n="curcuna_desc">Renkli Kıvrak Usül</div>
+                            </div>
+                            <span class="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded text-gold">10/8 Tempolu</span>
+                        </button>
+                    </div>
+
+                    <!-- BPM Slider -->
+                    <div class="mb-4 bg-black/30 p-2.5 rounded-xl border border-white/5">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-slate-300" data-i18n="lbl_tempo">Tempo (BPM):</label>
+                            <span id="bpm-display" class="text-xs font-bold text-gold">90 BPM</span>
+                        </div>
+                        <input type="range" id="bpm-slider" min="60" max="140" value="90" oninput="updateBPM(this.value)" class="w-full accent-gold h-1.5 bg-slate-700 rounded-lg cursor-pointer">
+                    </div>
+
+                    <!-- Start/Stop Controls -->
+                    <div class="flex space-x-2">
+                        <button id="start-rhythm-btn" onclick="toggleRhythmGame()" class="flex-1 bg-gradient-to-r from-gold-dark via-gold to-yellow-500 hover:brightness-110 text-slate-950 font-extrabold py-2.5 px-3 rounded-xl shadow-lg transition-all text-center flex items-center justify-center space-x-2 text-xs">
+                            <i class="fa-solid fa-play"></i>
+                            <span data-i18n="btn_start">BAŞLAT</span>
+                        </button>
+                        <button onclick="resetRhythmGame()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 py-2.5 px-3 rounded-xl text-xs font-semibold">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Canvas -->
+                <div class="w-full lg:w-2/3 glass-panel p-4 rounded-2xl border border-gold/30 flex flex-col items-center relative min-h-[420px]">
+                    <div class="w-full flex justify-between items-center mb-2 px-2">
+                        <div>
+                            <span class="text-[10px] text-slate-400 uppercase" data-i18n="lbl_score">Skor</span>
+                            <span id="rhythm-score" class="text-xl font-extrabold text-gold block font-mono">0</span>
+                        </div>
+                        <div class="text-center">
+                            <div id="feedback-text" class="text-lg font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-gold h-6 transition-all"></div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] text-slate-400 uppercase" data-i18n="lbl_combo">Kombo</span>
+                            <span id="rhythm-combo" class="text-xl font-extrabold text-emerald-400 block font-mono">x0</span>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full max-w-md h-[320px] bg-slate-950/90 rounded-xl border border-gold/20 overflow-hidden">
+                        <canvas id="rhythmCanvas" class="w-full h-full block"></canvas>
+                       
+                        <!-- Touch Hit Buttons -->
+                        <div class="absolute bottom-1 left-0 right-0 px-2 flex justify-between space-x-2">
+                            <button onmousedown="triggerHit('dum')" ontouchstart="event.preventDefault(); triggerHit('dum')" class="flex-1 py-3 bg-red-900/40 hover:bg-red-800/60 active:scale-95 border border-red-500/50 rounded-lg text-red-200 font-bold text-center transition-all backdrop-blur-sm">
+                                <div class="text-base">DÜM</div>
+                                <div class="text-[9px] text-red-300/70 font-mono">A / [←]</div>
+                            </button>
+                            <button onmousedown="triggerHit('tek')" ontouchstart="event.preventDefault(); triggerHit('tek')" class="flex-1 py-3 bg-amber-900/40 hover:bg-amber-800/60 active:scale-95 border border-amber-500/50 rounded-lg text-amber-200 font-bold text-center transition-all backdrop-blur-sm">
+                                <div class="text-base">TEK</div>
+                                <div class="text-[9px] text-amber-300/70 font-mono">L / [→]</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 2. EAR QUIZ TAB ================= -->
+        <section id="tab-quiz" class="tab-content hidden transition-opacity duration-300">
+            <div class="max-w-2xl mx-auto glass-panel p-5 sm:p-7 rounded-2xl border border-gold/30">
+                <div class="text-center mb-4">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-semibold bg-gold/10 text-gold border border-gold/30" data-i18n="quiz_tag">
+                        Kulak Eğitimi & Tahmin
+                    </span>
+                    <h2 class="font-serif-title text-xl sm:text-2xl font-extrabold text-gold mt-2" data-i18n="quiz_heading">Sazı ve Makamı Hisset!</h2>
+                </div>
+
+                <div class="w-full bg-slate-800 rounded-full h-1.5 mb-5 overflow-hidden">
+                    <div id="quiz-progress-bar" class="bg-gradient-to-r from-gold-dark to-gold h-full w-0 transition-all duration-300"></div>
+                </div>
+
+                <div id="quiz-card" class="bg-oriental-card/90 p-5 rounded-xl border border-gold/20 text-center mb-5 shadow-xl">
+                    <button id="quiz-play-btn" onclick="playQuizAudio()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-gold-dark via-gold to-yellow-400 text-slate-950 text-2xl mx-auto flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all mb-3">
+                        <i id="quiz-play-icon" class="fa-solid fa-play ml-1"></i>
+                    </button>
+                    <p class="text-[10px] text-slate-400" data-i18n="quiz_listen_tip">Sesi tekrar dinlemek için tıklayın</p>
+
+                    <h3 id="quiz-question-text" class="text-base font-bold text-slate-100 mt-3 mb-2">
+                        Dinlediğiniz müzik örneği hangi saza aittir?
+                    </h3>
+                   
+                    <div id="quiz-feedback" class="h-5 font-bold text-xs my-2"></div>
+                </div>
+
+                <div id="quiz-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5"></div>
+
+                <div class="flex justify-between items-center">
+                    <div class="text-xs text-slate-400">
+                        <span data-i18n="lbl_question">Soru</span>: <span id="quiz-current-num" class="text-gold font-bold">1</span> / <span id="quiz-total-num">15</span>
+                    </div>
+                    <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden bg-gold hover:bg-gold-light text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition-all">
+                        <span data-i18n="btn_next">Sonraki Soru</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 3. STUDIO / JAM MODE TAB ================= -->
+        <section id="tab-studio" class="tab-content hidden transition-opacity duration-300">
+            <div class="glass-panel p-4 sm:p-6 rounded-2xl border border-gold/30">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+                    <div>
+                        <h2 class="font-serif-title text-xl font-extrabold text-gold" data-i18n="nav_studio">Meşk Odası</h2>
+                        <p class="text-xs text-slate-400" data-i18n="studio_desc">Mikrotonal çeyrek tonlar ve makam dizileri ile ezgi oluşturun.</p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <select id="studio-instrument" onchange="changeStudioInstrument(this.value)" class="bg-black/50 border border-gold/40 text-gold rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
+                            <option value="ney">Saz: Ney (Nefesli)</option>
+                            <option value="kanun">Saz: Kanun (Çeng)</option>
+                            <option value="ud">Saz: Ud (Mızraplı)</option>
+                        </select>
+
+                        <select id="studio-makam" onchange="changeStudioMakam(this.value)" class="bg-black/50 border border-gold/40 text-gold rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
+                            <option value="rast">Makam: Rast</option>
+                            <option value="hicaz">Makam: Hicaz</option>
+                            <option value="nihavend">Makam: Nihavend</option>
+                            <option value="segah">Makam: Segah</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Virtual Keyboard Pads -->
+                <div class="bg-black/60 p-3 rounded-xl border border-gold/20 mb-4">
+                    <div class="text-[10px] text-slate-400 mb-2 flex justify-between items-center">
+                        <span><i class="fa-regular fa-keyboard mr-1"></i> <kbd class="px-1 bg-slate-800 text-gold rounded">Z</kbd> - <kbd class="px-1 bg-slate-800 text-gold rounded">M</kbd></span>
+                        <span id="active-scale-info" class="text-gold font-semibold">Rast Makamı Skalası</span>
+                    </div>
+
+                    <div id="virtual-keyboard" class="grid grid-cols-4 sm:grid-cols-8 gap-2 min-h-[140px]"></div>
+                </div>
+
+                <!-- Percussion Pad -->
+                <div class="bg-oriental-card/80 p-3 rounded-xl border border-gold/20">
+                    <h4 class="text-[10px] font-bold text-gold uppercase tracking-wider mb-2"><i class="fa-solid fa-drum mr-1"></i> Kudüm / Bendir Pedleri</h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button onmousedown="playPercussion('dum')" class="p-3 bg-gradient-to-b from-red-950 to-red-900 border border-red-500/40 hover:border-red-400 rounded-xl text-center active:scale-95 transition-all">
+                            <div class="font-extrabold text-red-200 text-sm">DÜM</div>
+                        </button>
+                        <button onmousedown="playPercussion('tek')" class="p-3 bg-gradient-to-b from-amber-950 to-amber-900 border border-amber-500/40 hover:border-amber-400 rounded-xl text-center active:scale-95 transition-all">
+                            <div class="font-extrabold text-amber-200 text-sm">TEK</div>
+                        </button>
+                        <button onmousedown="playPercussion('ka')" class="p-3 bg-gradient-to-b from-yellow-950 to-yellow-900 border border-yellow-500/40 hover:border-yellow-400 rounded-xl text-center active:scale-95 transition-all">
+                            <div class="font-extrabold text-yellow-200 text-sm">KA</div>
+                        </button>
+                        <button onmousedown="playPercussion('zilli')" class="p-3 bg-gradient-to-b from-emerald-950 to-emerald-900 border border-emerald-500/40 hover:border-emerald-400 rounded-xl text-center active:scale-95 transition-all">
+                            <div class="font-extrabold text-emerald-200 text-sm">ZİLLİ</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= AVATAR & PROFILE MODAL ================= -->
+    <div id="avatar-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-5">
+        <div class="glass-panel w-full max-w-4xl max-h-[90vh] rounded-2xl border border-gold/40 flex flex-col overflow-hidden shadow-2xl">
+           
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gold/30 flex justify-between items-center bg-oriental-card">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-users-viewfinder text-gold text-lg"></i>
+                    <h3 class="font-serif-title font-bold text-gold text-base sm:text-lg" data-i18n="avatar_modal_title">Musikişinas Profil & Avatar Seçimi</h3>
+                </div>
+                <button onclick="closeAvatarModal()" class="text-slate-400 hover:text-white text-lg px-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-5 flex-grow">
+               
+                <!-- Name Editing Box -->
+                <div class="bg-black/40 p-4 rounded-xl border border-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="w-full sm:w-auto flex-grow">
+                        <label class="text-xs font-bold text-gold block mb-1" data-i18n="lbl_username">Kullanıcı Adınız:</label>
+                        <input type="text" id="username-input" class="w-full bg-slate-900 border border-gold/40 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-gold" placeholder="Adınızı girin..." maxlength="20">
+                    </div>
+                    <button onclick="saveUsername()" class="w-full sm:w-auto bg-gold hover:bg-gold-light text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition-all mt-auto" data-i18n="btn_save">
+                        Kaydet
+                    </button>
+                </div>
+
+                <!-- Stats & XP Progress -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 block" data-i18n="lbl_total_xp">Toplam XP</span>
+                        <span id="modal-xp" class="text-lg font-bold text-gold">0 XP</span>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 block" data-i18n="lbl_level">Seviye</span>
+                        <span id="modal-level" class="text-lg font-bold text-emerald-400">Lvl 1</span>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 block" data-i18n="lbl_unlocked">Açılan Avatarlar</span>
+                        <span id="modal-unlocked-count" class="text-lg font-bold text-yellow-400">3 / 50</span>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] text-slate-400 block" data-i18n="lbl_next_unlock">Sonraki Kilit</span>
+                        <span id="modal-next-unlock" class="text-xs font-bold text-slate-200 mt-1 block">500 XP</span>
+                    </div>
+                </div>
+
+                <!-- 50 Avatars Grid -->
+                <div>
+                    <h4 class="text-xs font-bold text-gold uppercase tracking-wider mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-lock-open mr-1"></i> <span data-i18n="avatars_heading">50 Farklı Musiki Avatarı</span></span>
+                        <span class="text-[10px] text-slate-400 lowercase" data-i18n="unlock_tip">(etkinlikler yaptıkça kilitler açılır)</span>
+                    </h4>
+                   
+                    <div id="avatars-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="w-full glass-panel border-t border-gold/20 py-3 px-4 text-center text-xs text-slate-500 mt-4">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1">
+            <div><span class="text-gold font-semibold">Makam & Ritim Ustası</span> &copy; 2026</div>
+            <div class="text-[10px] text-slate-400" data-i18n="footer_info">Web Audio API Synth & i18n Powered</div>
+        </div>
+    </footer>
+
+    <script>
+        /* ===================================================================
+           1. MULTI-LANGUAGE TRANSLATION DATABASE (i18n - 9 Languages)
+           =================================================================== */
+        const TRANSLATIONS = {
+            tr: {
+                app_title: "MAKAM & RİTİM USTASI",
+                app_subtitle: "Türk Musikisi Oyunu",
+                nav_rhythm: "Usülünü Yakala!",
+                nav_quiz: "Makam Testi",
+                nav_studio: "Meşk Odası",
+                audio_on: "Sesi Aç",
+                hero_tag: "Geleneksel & İnteraktif",
+                hero_title: "Türk Musikisinin Büyülü Ritim ve Melodileri",
+                hero_desc: "Etkinlikleri tamamla, XP kazanarak 50 farklı geleneksel Türk Musikisi avatarının kilidini aç!",
+                unlocked_avatars: "Açılan Avatarlar",
+                btn_edit_profile: "Profili Düzenle",
+                card_rhythm_desc: "Sofyan, Aksak 9/8 ve Curcuna usüllerinde düşen ritimleri yakala, kombo yap!",
+                card_quiz_desc: "Sentezlenen Ney, Kanun, Ud seslerini ve makam ezgilerini dinleyip doğru tahmin et!",
+                card_studio_desc: "Koma tonlu makam skalalarında sanal enstrümanları özgürce çal!",
+                btn_play: "Oyuna Başla",
+                btn_start_test: "Testi Başlat",
+                btn_enter_studio: "Stüdyoya Gir",
+                select_pattern: "Usül Seçimi",
+                sofyan_desc: "Temel & Hareketli",
+                aksak_desc: "Coşkulu 9/8",
+                curcuna_desc: "Renkli Kıvrak Usül",
+                lbl_tempo: "Tempo (BPM):",
+                btn_start: "BAŞLAT",
+                lbl_score: "Skor",
+                lbl_combo: "Kombo",
+                quiz_tag: "Kulak Eğitimi & Tahmin",
+                quiz_heading: "Sazı ve Makamı Hisset!",
+                quiz_listen_tip: "Sesi tekrar dinlemek için tıklayın",
+                lbl_question: "Soru",
+                btn_next: "Sonraki Soru",
+                studio_desc: "Mikrotonal çeyrek tonlar ve makam dizileri ile ezgi oluşturun.",
+                avatar_modal_title: "Musikişinas Profil & Avatar Seçimi",
+                lbl_username: "Kullanıcı Adınız:",
+                btn_save: "Kaydet",
+                lbl_total_xp: "Toplam XP",
+                lbl_level: "Seviye",
+                lbl_unlocked: "Açılan Avatarlar",
+                lbl_next_unlock: "Sonraki Kilit",
+                avatars_heading: "50 Farklı Musiki Avatarı",
+                unlock_tip: "(etkinlikler yaptıkça kilitler açılır)",
+                footer_info: "Web Audio API Synth & i18n Powered"
+            },
+            en: {
+                app_title: "MAKAM & RHYTHM MASTER",
+                app_subtitle: "Turkish Music Game",
+                nav_rhythm: "Catch the Rhythm!",
+                nav_quiz: "Makam Quiz",
+                nav_studio: "Music Studio",
+                audio_on: "Audio On",
+                hero_tag: "Traditional & Interactive",
+                hero_title: "Magical Rhythms & Melodies of Turkish Music",
+                hero_desc: "Complete activities, gain XP, and unlock 50 traditional Turkish music avatars!",
+                unlocked_avatars: "Unlocked Avatars",
+                btn_edit_profile: "Edit Profile",
+                card_rhythm_desc: "Catch falling rhythm notes in Sofyan, Aksak 9/8, and Curcuna meters!",
+                card_quiz_desc: "Listen to synthesized Ney, Kanun, Ud sounds and guess the correct makam!",
+                card_studio_desc: "Play synthesized traditional instruments on microtonal makam scales!",
+                btn_play: "Play Game",
+                btn_start_test: "Start Quiz",
+                btn_enter_studio: "Enter Studio",
+                select_pattern: "Rhythm Pattern",
+                sofyan_desc: "Basic 4/4 Meter",
+                aksak_desc: "Lively 9/8 Meter",
+                curcuna_desc: "Dynamic 10/8 Meter",
+                lbl_tempo: "Tempo (BPM):",
+                btn_start: "START",
+                lbl_score: "Score",
+                lbl_combo: "Combo",
+                quiz_tag: "Ear Training",
+                quiz_heading: "Feel the Instrument & Makam!",
+                quiz_listen_tip: "Click button to replay sound",
+                lbl_question: "Question",
+                btn_next: "Next Question",
+                studio_desc: "Compose melodies with microtonal quarter-tone makam scales.",
+                avatar_modal_title: "Musician Profile & Avatar Selection",
+                lbl_username: "Your Name:",
+                btn_save: "Save",
+                lbl_total_xp: "Total XP",
+                lbl_level: "Level",
+                lbl_unlocked: "Unlocked",
+                lbl_next_unlock: "Next Unlock",
+                avatars_heading: "50 Unique Music Avatars",
+                unlock_tip: "(unlocked through activities)",
+                footer_info: "Web Audio API Synth & i18n Powered"
+            },
+            de: {
+                app_title: "MAKAM & RHYTHMUS MEISTER",
+                app_subtitle: "Türkisches Musikspiel",
+                nav_rhythm: "Fang den Rhythmus!",
+                nav_quiz: "Makam Test",
+                nav_studio: "Musikstudio",
+                audio_on: "Ton An",
+                hero_tag: "Traditionell & Interaktiv",
+                hero_title: "Magische Rhythmen der Türkischen Musik",
+                hero_desc: "Sammle XP und schalte 50 traditionelle Avatare frei!",
+                unlocked_avatars: "Freigeschaltete Avatare",
+                btn_edit_profile: "Profil Bearbeiten",
+                btn_play: "Spielen",
+                btn_start_test: "Test Starten",
+                btn_enter_studio: "Studio Betreten",
+                lbl_score: "Punkte",
+                lbl_combo: "Kombo"
+            },
+            fr: {
+                app_title: "MAÎTRE DU MAKAM ET RYTHME",
+                app_subtitle: "Jeu de Musique Turque",
+                nav_rhythm: "Attrape le Rythme!",
+                nav_quiz: "Quiz Makam",
+                nav_studio: "Studio de Musique",
+                audio_on: "Activer le Son",
+                hero_tag: "Traditionnel & Interactif",
+                hero_title: "Rythmes Magiques de la Musique Turque",
+                hero_desc: "Gagnez des XP et débloquez 50 avatars traditionnels!",
+                unlocked_avatars: "Avatars Débloqués",
+                btn_edit_profile: "Modifier le Profil",
+                btn_play: "Jouer",
+                btn_start_test: "Commencer",
+                btn_enter_studio: "Entrer au Studio"
+            },
+            es: {
+                app_title: "MAESTRO DEL RITMO Y MAKAM",
+                app_subtitle: "Juego de Música Turca",
+                nav_rhythm: "¡Atrapa el Ritmo!",
+                nav_quiz: "Prueba de Makam",
+                nav_studio: "Estudio de Música",
+                audio_on: "Sonido",
+                hero_tag: "Tradicional e Interactivo",
+                hero_title: "Ritmos Mágicos de la Música Turca",
+                hero_desc: "¡Consigue XP y desbloquea 50 avatares tradicionales!",
+                unlocked_avatars: "Avatares Desbloqueados",
+                btn_edit_profile: "Editar Perfil",
+                btn_play: "Jugar",
+                btn_start_test: "Iniciar Prueba",
+                btn_enter_studio: "Entrar al Estudio"
+            },
+            ar: {
+                app_title: "أستاذ المقام والإيقاع",
+                app_subtitle: "لعبة الموسيقى التركية",
+                nav_rhythm: "التقط الإيقاع!",
+                nav_quiz: "اختبار المقام",
+                nav_studio: "أستوديو الموسيقى",
+                audio_on: "تشغيل الصوت",
+                hero_tag: "تقليدي وتفاعلي",
+                hero_title: "إيقاعات وألحان الموسيقى الشرقية",
+                hero_desc: "أكمل الأنشطة واكسب النقاط لفتح 50 شخصية موسيقية!",
+                unlocked_avatars: "الشخصيات المفتوحة",
+                btn_edit_profile: "تعديل الملف",
+                btn_play: "ابدأ اللعب",
+                btn_start_test: "ابدأ الاختبار",
+                btn_enter_studio: "دخول الأستوديو"
+            },
+            ja: {
+                app_title: "マカム＆リズム・マスター",
+                app_subtitle: "トルコ伝統音楽ゲーム",
+                nav_rhythm: "リズムを掴め！",
+                nav_quiz: "マカム・クイズ",
+                nav_studio: "音楽スタジオ",
+                audio_on: "サウンドON",
+                hero_tag: "伝統的＆インタラクティブ",
+                hero_title: "トルコ音楽の魅惑的なリズムとメロディ",
+                hero_desc: "アクティビティをクリアしてXPを獲得し、50種類のアバターを解放しよう！",
+                unlocked_avatars: "解放されたアバター",
+                btn_edit_profile: "プロフィール編集",
+                btn_play: "プレイ開始",
+                btn_start_test: "テスト開始",
+                btn_enter_studio: "スタジオへ"
+            },
+            ru: {
+                app_title: "МАСТЕР МАКАМА И РИТМА",
+                app_subtitle: "Игра Турецкой Музыки",
+                nav_rhythm: "Поймай Ритм!",
+                nav_quiz: "Тест Макама",
+                nav_studio: "Студия Музыки",
+                audio_on: "Звук Вкл",
+                hero_tag: "Традиционный и Интерактивный",
+                hero_title: "Магические Ритмы Турецкой Музыки",
+                hero_desc: "Зарабатывайте XP и открывайте 50 традиционных аватаров!",
+                unlocked_avatars: "Открытые Аватары",
+                btn_edit_profile: "Профиль",
+                btn_play: "Играть",
+                btn_start_test: "Начать Тест",
+                btn_enter_studio: "В Студию"
+            },
+            az: {
+                app_title: "MƏQAM VƏ RİTM USTASI",
+                app_subtitle: "Türk Musiqisi Oyunu",
+                nav_rhythm: "Ritmi Tut!",
+                nav_quiz: "Məqam Testi",
+                nav_studio: "Məşk Otağı",
+                audio_on: "Səsi Aç",
+                hero_tag: "Ənənəvi və İnteraktiv",
+                hero_title: "Türk Musiqisinin Sehrli Ritimləri",
+                hero_desc: "XP qazanaraq 50 fərqli avatarın kilidini açın!",
+                unlocked_avatars: "Açılan Avatarlar",
+                btn_edit_profile: "Profili Düzəlt",
+                btn_play: "Oyuna Başla",
+                btn_start_test: "Testə Başla",
+                btn_enter_studio: "Studiyaya Gir"
+            }
+        };
+
+        let currentLang = 'tr';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const dict = TRANSLATIONS[lang] || TRANSLATIONS['tr'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+        }
+
+        /* ===================================================================
+           2. 50 UNLOCKABLE AVATARS & USER PROFILE SYSTEM
+           =================================================================== */
+        const AVATARS_DATABASE = [
+            { id: 1, name: "Neyzen Genç", emoji: "👳", reqXp: 0 },
+            { id: 2, name: "Kudümzen Üstat", emoji: "🥁", reqXp: 0 },
+            { id: 3, name: "Hanende Sesi", emoji: "🎙️", reqXp: 0 },
+            { id: 4, name: "Kanuni Çırak", emoji: "🎼", reqXp: 150 },
+            { id: 5, name: "Udi Sanatçı", emoji: "🪕", reqXp: 300 },
+            { id: 6, name: "Derviş-i Musiki", emoji: "🧘", reqXp: 500 },
+            { id: 7, name: "Tamburi Üstat", emoji: "🎸", reqXp: 700 },
+            { id: 8, name: "Bendir Ustası", emoji: "🪘", reqXp: 900 },
+            { id: 9, name: "Kemençeci", emoji: "🎻", reqXp: 1100 },
+            { id: 10, name: "Saray Müzisyeni", emoji: "👑", reqXp: 1300 },
+            { id: 11, name: "Zurna Üstadı", emoji: "🎺", reqXp: 1500 },
+            { id: 12, name: "Sazəndə", emoji: "🎵", reqXp: 1750 },
+            { id: 13, name: "Bestekâr", emoji: "📜", reqXp: 2000 },
+            { id: 14, name: "Müezzin", emoji: "🕌", reqXp: 2250 },
+            { id: 15, name: "Aşık Veysel Temalı", emoji: "🕶️", reqXp: 2500 },
+            { id: 16, name: "Mevlevi Semazen", emoji: "🕊️", reqXp: 2800 },
+            { id: 17, name: "Mehter Başı", emoji: "🛡️", reqXp: 3100 },
+            { id: 18, name: "Defzen Kız", emoji: "🪘", reqXp: 3400 },
+            { id: 19, name: "Rebab Ustası", emoji: "🎶", reqXp: 3700 },
+            { id: 20, name: "Müzik Teorisyeni", emoji: "🎓", reqXp: 4000 },
+            { id: 21, name: "Lavlut Sanatçısı", emoji: "✨", reqXp: 4300 },
+            { id: 22, name: "Santom Ustası", emoji: "🎹", reqXp: 4600 },
+            { id: 23, name: "Hafız Hanende", emoji: "📖", reqXp: 5000 },
+            { id: 24, name: "Çeng Sanatçısı", emoji: "🪗", reqXp: 5400 },
+            { id: 25, name: "Tamburi Cemil Bey", emoji: "🎩", reqXp: 5800 },
+            { id: 26, name: "Itrî Ruhu", emoji: "🌟", reqXp: 6200 },
+            { id: 27, name: "Dede Efendi", emoji: "🏛️", reqXp: 6600 },
+            { id: 28, name: "Saray Baş-Sazəndesi", emoji: "💎", reqXp: 7000 },
+            { id: 29, name: "Aşık Yunus", emoji: "🌿", reqXp: 7500 },
+            { id: 30, name: "Saz Şairi", emoji: "🪶", reqXp: 8000 },
+            { id: 31, name: "Neyzen Tevfik Ekolü", emoji: "🍷", reqXp: 8500 },
+            { id: 32, name: "Makam Kâşifi", emoji: "🔍", reqXp: 9000 },
+            { id: 33, name: "Usül Mimarı", emoji: "📐", reqXp: 9500 },
+            { id: 34, name: "Koma Avcısı", emoji: "🎯", reqXp: 10000 },
+            { id: 35, name: "Saz Virtüözü", emoji: "⚡", reqXp: 11000 },
+            { id: 36, name: "Doğu Rüzgarı", emoji: "🌙", reqXp: 12000 },
+            { id: 37, name: "Padişah Musikişinas", emoji: "Imperial", emoji: "Imperial", emoji: "🤴", reqXp: 13000 },
+            { id: 38, name: "Gelenek Koruyucusu", emoji: "🛡️", reqXp: 14000 },
+            { id: 39, name: "Meşk Üstadı", emoji: "🔥", reqXp: 15000 },
+            { id: 40, name: "Ritim Sultanı", emoji: "👑", reqXp: 16500 },
+            { id: 41, name: "Makam Profesörü", emoji: "📚", reqXp: 18000 },
+            { id: 42, name: "Kulak Fenomeni", emoji: "🎧", reqXp: 20000 },
+            { id: 43, name: "Efsanevi Sazəndə", emoji: "🌌", reqXp: 22000 },
+            { id: 44, name: "Gök Kubbe Sesi", emoji: "🔮", reqXp: 24000 },
+            { id: 45, name: "Binbir Gece Müzisyeni", emoji: "🕌", reqXp: 26000 },
+            { id: 46, name: "Altın Mızrap", emoji: "🥇", reqXp: 28000 },
+            { id: 47, name: "Elmas Neyzen", emoji: "💎", reqXp: 30000 },
+            { id: 48, name: "Ritim İlahı", emoji: "⚡", reqXp: 35000 },
+            { id: 49, name: "Makam Üstad-ı Azam", emoji: "⚜️", reqXp: 40000 },
+            { id: 50, name: "Efsanevi Musikşinas", emoji: "🏆", reqXp: 50000 }
+        ];
+
+        let userProfile = {
+            username: "Neyzen",
+            selectedAvatarId: 1,
+            xp: 0,
+            level: 1
+        };
+
+        function loadUserProfile() {
+            const saved = localStorage.getItem('makam_user_profile');
+            if (saved) {
+                try { userProfile = JSON.parse(saved); } catch(e){}
+            }
+            updateProfileUI();
+        }
+
+        function saveUserProfile() {
+            localStorage.setItem('makam_user_profile', JSON.stringify(userProfile));
+            updateProfileUI();
+        }
+
+        function addXP(amount) {
+            userProfile.xp += amount;
+            userProfile.level = Math.floor(userProfile.xp / 500) + 1;
+            saveUserProfile();
+           
+            // Confetti effect on level up
+            if (window.confetti && amount >= 100) {
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+            }
+        }
+
+        function updateProfileUI() {
+            const currentAvatar = AVATARS_DATABASE.find(a => a.id === userProfile.selectedAvatarId) || AVATARS_DATABASE[0];
+           
+            document.getElementById('header-avatar').innerText = currentAvatar.emoji;
+            document.getElementById('banner-avatar').innerText = currentAvatar.emoji;
+            document.getElementById('header-username').innerText = userProfile.username;
+            document.getElementById('banner-username').innerText = userProfile.username;
+            document.getElementById('username-input').value = userProfile.username;
+
+            document.getElementById('user-level').innerText = userProfile.level;
+            document.getElementById('modal-level').innerText = `Lvl ${userProfile.level}`;
+            document.getElementById('modal-xp').innerText = `${userProfile.xp} XP`;
+
+            // Calculate Unlocked Count
+            const unlockedCount = AVATARS_DATABASE.filter(a => userProfile.xp >= a.reqXp).length;
+            document.getElementById('banner-avatar-count').innerText = unlockedCount;
+            document.getElementById('modal-unlocked-count').innerText = `${unlockedCount} / 50`;
+
+            const nextLocked = AVATARS_DATABASE.find(a => userProfile.xp < a.reqXp);
+            document.getElementById('modal-next-unlock').innerText = nextLocked ? `${nextLocked.reqXp} XP` : 'Tümü Açıldı!';
+        }
+
+        function openAvatarModal() {
+            renderAvatarsGrid();
+            document.getElementById('avatar-modal').classList.remove('hidden');
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatar-modal').classList.add('hidden');
+        }
+
+        function saveUsername() {
+            const val = document.getElementById('username-input').value.trim();
+            if (val) {
+                userProfile.username = val;
+                saveUserProfile();
+                closeAvatarModal();
+            }
+        }
+
+        function selectAvatar(avatarId) {
+            const avatar = AVATARS_DATABASE.find(a => a.id === avatarId);
+            if (avatar && userProfile.xp >= avatar.reqXp) {
+                userProfile.selectedAvatarId = avatarId;
+                saveUserProfile();
+                renderAvatarsGrid();
+            }
+        }
+
+        function renderAvatarsGrid() {
+            const grid = document.getElementById('avatars-grid');
+            grid.innerHTML = '';
+
+            AVATARS_DATABASE.forEach(avatar => {
+                const isUnlocked = userProfile.xp >= avatar.reqXp;
+                const isSelected = userProfile.selectedAvatarId === avatar.id;
+
+                const card = document.createElement('div');
+                card.className = `relative p-2 rounded-xl border flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+                    isSelected ? 'bg-gold/30 border-gold shadow-lg shadow-gold/20 scale-105' :
+                    isUnlocked ? 'bg-black/50 border-gold/30 hover:border-gold hover:bg-gold/10' :
+                    'bg-slate-900/40 border-slate-800 opacity-60 grayscale'
+                }`;
+
+                card.onclick = () => {
+                    if (isUnlocked) selectAvatar(avatar.id);
+                };
+
+                card.innerHTML = `
+                    <span class="text-2xl mb-1 ${!isUnlocked ? 'avatar-locked' : ''}">${avatar.emoji}</span>
+                    <span class="text-[9px] font-bold text-slate-200 truncate w-full">${avatar.name}</span>
+                    ${!isUnlocked ? `<span class="text-[8px] text-yellow-500 font-mono"><i class="fa-solid fa-lock text-[8px] mr-0.5"></i>${avatar.reqXp} XP</span>` : ''}
+                    ${isSelected ? `<span class="absolute -top-1 -right-1 bg-gold text-black text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold"><i class="fa-solid fa-check"></i></span>` : ''}
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        /* ===================================================================
+           3. WEB AUDIO SYNTHESIZER ENGINE
+           =================================================================== */
+        let audioCtx = null;
+
+        function initAudioEngine() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            document.getElementById('audio-init-btn').classList.remove('bg-gold');
+            document.getElementById('audio-init-btn').classList.add('bg-emerald-600', 'text-white');
+            document.getElementById('audio-btn-text').innerText = "Ses Aktif";
+        }
+
+        function playPercussion(type) {
+            if (!audioCtx) initAudioEngine();
+            const now = audioCtx.currentTime;
+
+            if (type === 'dum') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(130, now);
+                osc.frequency.exponentialRampToValueAtTime(35, now + 0.3);
+                gain.gain.setValueAtTime(1.0, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+            else if (type === 'tek') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(380, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.15);
+                gain.gain.setValueAtTime(0.8, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.18);
+            }
+            else if (type === 'ka') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            }
+            else if (type === 'zilli') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(5000, now);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        function playInstrumentNote(freq, instrument = 'ney', duration = 0.8) {
+            if (!audioCtx) initAudioEngine();
+            const now = audioCtx.currentTime;
+
+            if (instrument === 'ney') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 0.98, now);
+                osc.frequency.exponentialRampToValueAtTime(freq, now + 0.1);
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.4, now + 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+            else if (instrument === 'kanun') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.7, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+            else if (instrument === 'ud') {
+                const osc = audioCtx.createOscillator();
+                const filter = audioCtx.createBiquadFilter();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(700, now);
+                gain.gain.setValueAtTime(0.6, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+        }
+
+        /* ===================================================================
+           4. TAB NAVIGATION
+           =================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+            }
+            if (tabId === 'rhythm') {
+                initRhythmCanvas();
+            }
+        }
+
+        /* ===================================================================
+           5. RHYTHM GAME LOGIC
+           =================================================================== */
+        let rhythmRunning = false;
+        let score = 0;
+        let combo = 0;
+        let bpm = 90;
+        let currentPatternKey = 'sofyan';
+
+        const RHYTHM_PATTERNS = {
+            sofyan: {
+                beats: [
+                    { time: 0, type: 'dum' },
+                    { time: 1, type: 'tek' },
+                    { time: 2, type: 'tek' },
+                    { time: 3, type: 'dum' }
+                ],
+                totalBeats: 4
+            },
+            aksak: {
+                beats: [
+                    { time: 0, type: 'dum' },
+                    { time: 1.5, type: 'tek' },
+                    { time: 3, type: 'dum' },
+                    { time: 4.5, type: 'tek' },
+                    { time: 6, type: 'tek' }
+                ],
+                totalBeats: 7.5
+            },
+            curcuna: {
+                beats: [
+                    { time: 0, type: 'dum' },
+                    { time: 2, type: 'tek' },
+                    { time: 3.5, type: 'tek' },
+                    { time: 5, type: 'dum' },
+                    { time: 7, type: 'tek' }
+                ],
+                totalBeats: 8.5
+            }
+        };
+
+        let activeNotes = [];
+        let startTime = 0;
+        let canvas, ctx;
+
+        function initRhythmCanvas() {
+            canvas = document.getElementById('rhythmCanvas');
+            if (!canvas) return;
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            ctx = canvas.getContext('2d');
+            drawRhythmCanvas();
+        }
+
+        function selectRhythmPattern(key) {
+            currentPatternKey = key;
+            document.querySelectorAll('.pattern-btn').forEach(btn => {
+                btn.classList.remove('border-gold/40', 'bg-gold/10');
+                btn.classList.add('border-white/10', 'bg-black/20');
+            });
+            const activeBtn = document.getElementById(`pattern-btn-${key}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-white/10', 'bg-black/20');
+                activeBtn.classList.add('border-gold/40', 'bg-gold/10');
+            }
+            resetRhythmGame();
+        }
+
+        function updateBPM(val) {
+            bpm = parseInt(val);
+            document.getElementById('bpm-display').innerText = `${bpm} BPM`;
+        }
+
+        function toggleRhythmGame() {
+            if (!audioCtx) initAudioEngine();
+
+            if (rhythmRunning) {
+                rhythmRunning = false;
+                document.getElementById('start-rhythm-btn').innerHTML = '<i class="fa-solid fa-play"></i><span>DEVAM ET</span>';
+            } else {
+                rhythmRunning = true;
+                startTime = performance.now();
+                document.getElementById('start-rhythm-btn').innerHTML = '<i class="fa-solid fa-pause"></i><span>DURDUR</span>';
+                gameLoop();
+            }
+        }
+
+        function resetRhythmGame() {
+            rhythmRunning = false;
+            activeNotes = [];
+            score = 0;
+            combo = 0;
+            updateHUD();
+            document.getElementById('start-rhythm-btn').innerHTML = '<i class="fa-solid fa-play"></i><span>BAŞLAT</span>';
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawRhythmCanvas();
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('rhythm-score').innerText = score;
+            document.getElementById('global-score').innerText = score;
+            document.getElementById('rhythm-combo').innerText = `x${combo}`;
+        }
+
+        function showFeedback(text, isGood = true) {
+            const el = document.getElementById('feedback-text');
+            el.innerText = text;
+            el.className = `text-lg font-extrabold ${isGood ? 'text-emerald-400' : 'text-red-400'} transition-all`;
+            setTimeout(() => { el.innerText = ''; }, 700);
+        }
+
+        let lastSpawnTime = 0;
+
+        function gameLoop() {
+            if (!rhythmRunning) return;
+
+            const now = performance.now();
+            const pattern = RHYTHM_PATTERNS[currentPatternKey];
+            const beatDurationMs = (60 / bpm) * 1000;
+            const cycleDurationMs = pattern.totalBeats * beatDurationMs;
+
+            if (now - lastSpawnTime > cycleDurationMs) {
+                lastSpawnTime = now;
+                pattern.beats.forEach(beat => {
+                    activeNotes.push({
+                        type: beat.type,
+                        spawnTime: now + (beat.time * beatDurationMs),
+                        hit: false,
+                        y: 0
+                    });
+                });
+            }
+
+            updateAndRenderNotes(now);
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateAndRenderNotes(now) {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRhythmCanvas();
+
+            const speed = 0.35;
+            const hitZoneY = canvas.height - 45;
+
+            for (let i = activeNotes.length - 1; i >= 0; i--) {
+                const note = activeNotes[i];
+                const timeElapsed = now - note.spawnTime;
+                note.y = timeElapsed * speed;
+
+                const laneX = note.type === 'dum' ? canvas.width * 0.28 : canvas.width * 0.72;
+
+                if (!note.hit && note.y > 0) {
+                    ctx.beginPath();
+                    ctx.arc(laneX, note.y, 16, 0, Math.PI * 2);
+                    ctx.fillStyle = note.type === 'dum' ? '#EF4444' : '#F59E0B';
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 9px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(note.type.toUpperCase(), laneX, note.y);
+                }
+
+                if (!note.hit && note.y > hitZoneY + 30) {
+                    note.hit = true;
+                    combo = 0;
+                    showFeedback("KAÇIRDIN!", false);
+                    updateHUD();
+                }
+
+                if (note.y > canvas.height + 30) {
+                    activeNotes.splice(i, 1);
+                }
+            }
+        }
+
+        function drawRhythmCanvas() {
+            if (!ctx) return;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.strokeStyle =
