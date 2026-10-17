@@ -145,6 +145,13 @@
                     <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-black/80 text-gold border border-gold/40 rounded-full px-2 py-1 text-xs font-bold focus:outline-none cursor-pointer">
                         <option value="tr">🇹🇷 TR</option>
                         <option value="en">🇬🇧 EN</option>
+                        <option value="de">🇩🇪 DE</option>
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="es">🇪🇸 ES</option>
+                        <option value="ar">🇸🇦 AR</option>
+                        <option value="ja">🇯🇵 JA</option>
+                        <option value="ru">🇷🇺 RU</option>
+                        <option value="az">🇦🇿 AZ</option>
                     </select>
                 </div>
             </div>
@@ -204,7 +211,7 @@
                     </div>
                     <h3 class="font-serif-title text-lg font-bold text-gold mb-1" data-i18n="nav_quiz">Makam & Saz Testi</h3>
                     <p class="text-xs text-slate-400 leading-relaxed mb-4" data-i18n="card_quiz_desc">
-                        Türk Musikisi kültürüne dair 10 soruluk kapsamlı bilgi ve kültür testini çöz!
+                        Sentezlenen Ney, Kanun, Ud seslerini ve Rast, Hicaz, Nihavend makamlarını dinleyip doğru tahmin et!
                     </p>
                     <span class="inline-flex items-center text-xs font-bold text-gold group-hover:translate-x-1 transition-transform">
                         <span data-i18n="btn_start_test">Testi Başlat</span> <i class="fa-solid fa-arrow-right ml-1"></i>
@@ -319,24 +326,25 @@
             </div>
         </section>
 
-        <!-- ================= 2. EAR & CULTURE QUIZ TAB ================= -->
+        <!-- ================= 2. EAR QUIZ TAB ================= -->
         <section id="tab-quiz" class="tab-content hidden transition-opacity duration-300">
             <div class="max-w-2xl mx-auto glass-panel p-5 sm:p-7 rounded-2xl border border-gold/30">
                 <div class="text-center mb-4">
                     <span class="px-3 py-1 rounded-full text-[10px] font-semibold bg-gold/10 text-gold border border-gold/30" data-i18n="quiz_tag">
-                        Türk Musikisi Kültür Testi
+                        Kulak Eğitimi & Tahmin
                     </span>
-                    <h2 class="font-serif-title text-xl sm:text-2xl font-extrabold text-gold mt-2">Makam & Tarih Bilgini Test Et!</h2>
+                    <h2 class="font-serif-title text-xl sm:text-2xl font-extrabold text-gold mt-2" data-i18n="quiz_heading">Sazı ve Makamı Hisset!</h2>
                 </div>
 
                 <div class="w-full bg-slate-800 rounded-full h-1.5 mb-5 overflow-hidden">
                     <div id="quiz-progress-bar" class="bg-gradient-to-r from-gold-dark to-gold h-full w-0 transition-all duration-300"></div>
                 </div>
 
-                <div id="quiz-card" class="bg-oriental-card/90 p-5 rounded-xl border border-gold/20 text-center mb-5 shadow-xl min-h-[140px] flex flex-col justify-center">
-                    <h3 id="quiz-question-text" class="text-sm sm:text-base font-bold text-slate-100 mb-2">
-                        Soru yükleniyor...
+                <div id="quiz-card" class="bg-oriental-card/90 p-5 rounded-xl border border-gold/20 text-center mb-5 shadow-xl">
+                    <h3 id="quiz-question-text" class="text-base font-bold text-slate-100 mt-3 mb-2">
+                        Türk Musikisi Testi: Soruyu okuyup doğru seçeneği işaretle.
                     </h3>
+                   
                     <div id="quiz-feedback" class="h-5 font-bold text-xs my-2"></div>
                 </div>
 
@@ -344,7 +352,7 @@
 
                 <div class="flex justify-between items-center">
                     <div class="text-xs text-slate-400">
-                        <span data-i18n="lbl_question">Soru</span>: <span id="quiz-current-num" class="text-gold font-bold">1</span> / <span id="quiz-total-num">14</span>
+                        <span data-i18n="lbl_question">Soru</span>: <span id="quiz-current-num" class="text-gold font-bold">1</span> / <span id="quiz-total-num">10</span>
                     </div>
                     <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden bg-gold hover:bg-gold-light text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition-all">
                         <span data-i18n="btn_next">Sonraki Soru</span> <i class="fa-solid fa-arrow-right ml-1"></i>
@@ -363,13 +371,13 @@
                     </div>
 
                     <div class="flex flex-wrap gap-2">
-                        <select id="studio-instrument" class="bg-black/50 border border-gold/40 text-gold rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
+                        <select id="studio-instrument" onchange="changeStudioInstrument(this.value)" class="bg-black/50 border border-gold/40 text-gold rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
                             <option value="ney">Saz: Ney (Nefesli)</option>
                             <option value="kanun">Saz: Kanun (Çeng)</option>
                             <option value="ud">Saz: Ud (Mızraplı)</option>
                         </select>
 
-                        <select id="studio-makam" class="bg-black/50 border border-gold/40 text-gold rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
+                        <select id="studio-makam" onchange="changeStudioMakam(this.value)" class="bg-black/50 border border-gold/40 text-gold rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none">
                             <option value="rast">Makam: Rast</option>
                             <option value="hicaz">Makam: Hicaz</option>
                             <option value="nihavend">Makam: Nihavend</option>
@@ -467,7 +475,9 @@
                         <span class="text-[10px] text-slate-400 lowercase" data-i18n="unlock_tip">(etkinlikler yaptıkça kilitler açılır)</span>
                     </h4>
                    
-                    <div id="avatars-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-3"></div>
+                    <div id="avatars-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-3">
+                        <!-- Rendered by JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -498,7 +508,7 @@
                 unlocked_avatars: "Açılan Avatarlar",
                 btn_edit_profile: "Profili Düzenle",
                 card_rhythm_desc: "Sofyan, Aksak 9/8 ve Curcuna usüllerinde düşen ritimleri yakala, kombo yap!",
-                card_quiz_desc: "Türk Musikisi kültürüne dair 14 soruluk kapsamlı bilgi ve kültür testini çöz!",
+                card_quiz_desc: "Sentezlenen Ney, Kanun, Ud seslerini ve makam ezgilerini dinleyip doğru tahmin et!",
                 card_studio_desc: "Koma tonlu makam skalalarında sanal enstrümanları özgürce çal!",
                 btn_play: "Oyuna Başla",
                 btn_start_test: "Testi Başlat",
@@ -511,7 +521,9 @@
                 btn_start: "BAŞLAT",
                 lbl_score: "Skor",
                 lbl_combo: "Kombo",
-                quiz_tag: "Türk Musikisi Kültür Testi",
+                quiz_tag: "Kulak Eğitimi & Tahmin",
+                quiz_heading: "Sazı ve Makamı Hisset!",
+                quiz_listen_tip: "Sesi tekrar dinlemek için tıklayın",
                 lbl_question: "Soru",
                 btn_next: "Sonraki Soru",
                 studio_desc: "Mikrotonal çeyrek tonlar ve makam dizileri ile ezgi oluşturun.",
@@ -539,7 +551,7 @@
                 unlocked_avatars: "Unlocked Avatars",
                 btn_edit_profile: "Edit Profile",
                 card_rhythm_desc: "Catch falling rhythm notes in Sofyan, Aksak 9/8, and Curcuna meters!",
-                card_quiz_desc: "Solve the comprehensive 14-question Turkish music culture quiz!",
+                card_quiz_desc: "Listen to synthesized Ney, Kanun, Ud sounds and guess the correct makam!",
                 card_studio_desc: "Play synthesized traditional instruments on microtonal makam scales!",
                 btn_play: "Play Game",
                 btn_start_test: "Start Quiz",
@@ -552,7 +564,9 @@
                 btn_start: "START",
                 lbl_score: "Score",
                 lbl_combo: "Combo",
-                quiz_tag: "Turkish Music Culture Quiz",
+                quiz_tag: "Ear Training",
+                quiz_heading: "Feel the Instrument & Makam!",
+                quiz_listen_tip: "Click button to replay sound",
                 lbl_question: "Question",
                 btn_next: "Next Question",
                 studio_desc: "Compose melodies with microtonal quarter-tone makam scales.",
@@ -692,4 +706,391 @@
                 gain.gain.setValueAtTime(0.8, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
             } else if (type === 'ka') {
-                osc.
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+            } else {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(5000, now);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+            }
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        }
+
+        function playInstrumentNote(freq, instrument = 'ney', duration = 0.8) {
+            if (!audioCtx) initAudioEngine();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = instrument === 'ney' ? 'sine' : instrument === 'kanun' ? 'triangle' : 'sawtooth';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        /* ===================================================================
+           4. TAB NAVIGATION
+           =================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+            if (tabId === 'rhythm') initRhythmCanvas();
+            if (tabId === 'quiz') initQuiz();
+            if (tabId === 'studio') initStudioKeyboard();
+        }
+
+        /* ===================================================================
+           5. RHYTHM GAME LOGIC (Fully Implemented & Fixed)
+           =================================================================== */
+        let rhythmRunning = false;
+        let score = 0;
+        let combo = 0;
+        let bpm = 90;
+        let currentPatternKey = 'sofyan';
+        let activeNotes = [];
+        let startTime = 0;
+        let lastSpawnTime = 0;
+        let canvas, ctx;
+
+        const RHYTHM_PATTERNS = {
+            sofyan: {
+                beats: [{ time: 0, type: 'dum' }, { time: 1, type: 'tek' }, { time: 2, type: 'tek' }, { time: 3, type: 'dum' }],
+                totalBeats: 4
+            },
+            aksak: {
+                beats: [{ time: 0, type: 'dum' }, { time: 1.5, type: 'tek' }, { time: 3, type: 'dum' }, { time: 4.5, type: 'tek' }, { time: 6, type: 'tek' }],
+                totalBeats: 7.5
+            },
+            curcuna: {
+                beats: [{ time: 0, type: 'dum' }, { time: 2, type: 'tek' }, { time: 3.5, type: 'tek' }, { time: 5, type: 'dum' }, { time: 7, type: 'tek' }],
+                totalBeats: 8.5
+            }
+        };
+
+        function initRhythmCanvas() {
+            canvas = document.getElementById('rhythmCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            ctx = canvas.getContext('2d');
+            drawRhythmCanvas();
+        }
+
+        function selectRhythmPattern(key) {
+            currentPatternKey = key;
+            document.querySelectorAll('.pattern-btn').forEach(btn => {
+                btn.classList.remove('border-gold/40', 'bg-gold/10');
+                btn.classList.add('border-white/10', 'bg-black/20');
+            });
+            const activeBtn = document.getElementById(`pattern-btn-${key}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-white/10', 'bg-black/20');
+                activeBtn.classList.add('border-gold/40', 'bg-gold/10');
+            }
+            resetRhythmGame();
+        }
+
+        function updateBPM(val) {
+            bpm = parseInt(val);
+            document.getElementById('bpm-display').innerText = `${bpm} BPM`;
+        }
+
+        function toggleRhythmGame() {
+            if (!audioCtx) initAudioEngine();
+            rhythmRunning = !rhythmRunning;
+            if (rhythmRunning) {
+                startTime = performance.now();
+                lastSpawnTime = performance.now() - 1000;
+                document.getElementById('start-rhythm-btn').innerHTML = '<i class="fa-solid fa-pause"></i><span>DURDUR</span>';
+                requestAnimationFrame(gameLoop);
+            } else {
+                document.getElementById('start-rhythm-btn').innerHTML = '<i class="fa-solid fa-play"></i><span>DEVAM ET</span>';
+            }
+        }
+
+        function resetRhythmGame() {
+            rhythmRunning = false;
+            activeNotes = [];
+            score = 0;
+            combo = 0;
+            updateHUD();
+            document.getElementById('start-rhythm-btn').innerHTML = '<i class="fa-solid fa-play"></i><span>BAŞLAT</span>';
+            if (ctx) { ctx.clearRect(0, 0, canvas.width, canvas.height); drawRhythmCanvas(); }
+        }
+
+        function updateHUD() {
+            document.getElementById('rhythm-score').innerText = score;
+            document.getElementById('global-score').innerText = score;
+            document.getElementById('rhythm-combo').innerText = `x${combo}`;
+        }
+
+        function showFeedback(text, isGood = true) {
+            const el = document.getElementById('feedback-text');
+            if (!el) return;
+            el.innerText = text;
+            el.className = `text-lg font-extrabold ${isGood ? 'text-emerald-400' : 'text-red-400'} transition-all`;
+            setTimeout(() => { el.innerText = ''; }, 600);
+        }
+
+        function triggerHit(type) {
+            if (!rhythmRunning) return;
+            playPercussion(type);
+
+            const hitZoneY = canvas.height - 45;
+            let matched = false;
+
+            for (let note of activeNotes) {
+                if (!note.hit && note.type === type && Math.abs(note.y - hitZoneY) < 40) {
+                    note.hit = true;
+                    matched = true;
+                    score += 10 + (combo * 2);
+                    combo += 1;
+                    addXP(5);
+                    showFeedback("HARİKA!", true);
+                    break;
+                }
+            }
+
+            if (!matched) {
+                combo = 0;
+                showFeedback("KAÇIRDIN!", false);
+            }
+            updateHUD();
+        }
+
+        function gameLoop() {
+            if (!rhythmRunning) return;
+            const now = performance.now();
+            const pattern = RHYTHM_PATTERNS[currentPatternKey];
+            const beatDurationMs = (60 / bpm) * 1000;
+            const cycleDurationMs = pattern.totalBeats * beatDurationMs;
+
+            if (now - lastSpawnTime > cycleDurationMs) {
+                lastSpawnTime = now;
+                pattern.beats.forEach(beat => {
+                    activeNotes.push({
+                        type: beat.type,
+                        spawnTime: now + (beat.time * beatDurationMs),
+                        hit: false,
+                        y: 0
+                    });
+                });
+            }
+
+            updateAndRenderNotes(now);
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateAndRenderNotes(now) {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRhythmCanvas();
+
+            const speed = 0.25;
+            const hitZoneY = canvas.height - 45;
+
+            for (let i = activeNotes.length - 1; i >= 0; i--) {
+                const note = activeNotes[i];
+                if (note.hit) continue;
+
+                const timeElapsed = now - note.spawnTime;
+                note.y = timeElapsed * speed;
+
+                const laneX = note.type === 'dum' ? canvas.width * 0.28 : canvas.width * 0.72;
+
+                if (note.y > 0 && note.y < canvas.height) {
+                    ctx.beginPath();
+                    ctx.arc(laneX, note.y, 18, 0, Math.PI * 2);
+                    ctx.fillStyle = note.type === 'dum' ? '#EF4444' : '#F59E0B';
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 10px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(note.type.toUpperCase(), laneX, note.y);
+                }
+
+                if (note.y > hitZoneY + 35) {
+                    note.hit = true;
+                    combo = 0;
+                    showFeedback("KAÇIRDIN!", false);
+                    updateHUD();
+                }
+
+                if (note.y > canvas.height + 50) {
+                    activeNotes.splice(i, 1);
+                }
+            }
+        }
+
+        function drawRhythmCanvas() {
+            if (!ctx) return;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Lanes background
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(w * 0.1, 0, w * 0.36, h);
+            ctx.fillRect(w * 0.54, 0, w * 0.36, h);
+
+            // Hit zone line
+            const hitZoneY = h - 45;
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.6)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(w * 0.1, hitZoneY);
+            ctx.lineTo(w * 0.9, hitZoneY);
+            ctx.stroke();
+        }
+
+        // Keyboard Controls for Rhythm Game
+        window.addEventListener('keydown', (e) => {
+            if (document.getElementById('tab-rhythm').classList.contains('hidden')) return;
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                triggerHit('dum');
+            } else if (e.key === 'ArrowRight' || e.key === 'l' || e.key === 'L') {
+                triggerHit('tek');
+            }
+        });
+
+        /* ===================================================================
+           6. QUIZ & STUDIO INITIALIZERS
+           =================================================================== */
+        let currentQuizIndex = 0;
+        let quizAnswered = false;
+        const quizQuestions = [
+            { q: "1. Türk Halk Müziği dönemleri; İslamiyet Öncesi, İslamiyet Etkisi Altındaki ve Cumhuriyetle Başlayan dönem olmak üzere 3 döneme ayrılır.", options: ["Doğru", "Yanlış"], answer: 0 },
+            { q: "2. Itri, Dede Efendi ve Hacı Arif Bey hangi müzik türünde eserler vermiştir?", options: ["A) Halk Müziği", "B) Cami Musikisi", "C) Klasik Türk Müziği"], answer: 2 },
+            { q: "3. Hangisi Türk musikisi kadın bestekârlarından değildir?", options: ["A) Reftar Kalfa", "B) Afife Jale", "C) Melahat Pars"], answer: 1 },
+            { q: "4. Hangi Osmanlı padişahının bestesi vardır?", options: ["A) Sultan Abdülaziz", "B) Fatih Sultan Mehmed", "C) Osman Gazi"], answer: 0 },
+            { q: "5. Hafızayı güçlendirdiği ve vesveseyi giderdiği belirtilen makam hangisidir?", options: ["A) Rast", "B) Zengule", "C) Isfahan"], answer: 2 },
+            { q: "6. Ezan, sala ve tekbir cami musikisi formlarındandır.", options: ["Doğru", "Yanlış"], answer: 0 },
+            { q: "7. Gülbank, dinî ve tasavvuf musikisi bünyesinde yer alan melodik bir dua/hitabet formudur.", options: ["Doğru", "Yanlış"], answer: 0 },
+            { q: "8. Ney telli bir çalgıdır.", options: ["Doğru", "Yanlış"], answer: 1 },
+            { q: "9. Kudüm ve rebab, telli çalgı türleridir.", options: ["Doğru", "Yanlış"], answer: 1 },
+            { q: "10. Ebced notası, sesleri Arap alfabesindeki harflerle göstermeye yarayan tarihî bir nota yazım sistemidir.", options: ["Doğru", "Yanlış"], answer: 0 },
+            { q: "11. Hüdayda (Fidayda), Erzurum yöresine ait bir oyun havasıdır.", options: ["Doğru", "Yanlış"], answer: 1 },
+            { q: "12. Mevlevi ayinlerinde sikke (başlık) neyi simgeler?", options: ["A) Ruhi doğuş", "B) Nefsin mezar taşını", "C) İnsan-ı kâmili"], answer: 1 },
+            { q: "13. Lâ-dînî müzik, dünyevi/din dışı müziktir.", options: ["Doğru", "Yanlış"], answer: 0 },
+            { q: "14. Türk musikisinde ritmi (zaman ölçüsünü) vurmalı çalgılarla tutmaya verilen ad nedir?", options: ["A) Usûl", "B) Makam", "C) Nota"], answer: 0 }
+        ];
+
+        function initQuiz() {
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                currentQuizIndex = 0;
+            }
+            quizAnswered = false;
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-question-text').innerText = q.q;
+            document.getElementById('quiz-current-num').innerText = currentQuizIndex + 1;
+            document.getElementById('quiz-total-num').innerText = quizQuestions.length;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`;
+            document.getElementById('quiz-feedback').innerText = '';
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+            document.getElementById('quiz-next-btn').innerHTML = currentQuizIndex === quizQuestions.length - 1
+                ? 'Testi Bitir <i class="fa-solid fa-check ml-1"></i>'
+                : '<span data-i18n="btn_next">Sonraki Soru</span> <i class="fa-solid fa-arrow-right ml-1"></i>';
+
+            const grid = document.getElementById('quiz-options-grid');
+            grid.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "p-3 rounded-xl border border-gold/30 bg-black/40 hover:bg-gold/20 text-slate-200 text-xs font-bold transition-all";
+                btn.innerText = opt;
+                btn.onclick = () => checkQuizAnswer(idx, q.answer, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function playQuizAudio() {
+            // Bu test bilgi sorularından oluştuğu için sesli soru kullanılmıyor.
+        }
+
+        function checkQuizAnswer(selected, correct, selectedButton) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+            const feedback = document.getElementById('quiz-feedback');
+            const buttons = document.querySelectorAll('#quiz-options-grid button');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-gold/20');
+                if (idx === correct) btn.classList.add('border-emerald-500', 'bg-emerald-900/40');
+            });
+            if (selected === correct) {
+                feedback.innerText = "Doğru cevap! +50 XP";
+                feedback.className = "h-5 font-bold text-xs my-2 text-emerald-400";
+                addXP(50);
+            } else {
+                feedback.innerText = "Yanlış cevap. Doğru cevap: " + quizQuestions[currentQuizIndex].options[correct];
+                feedback.className = "h-5 font-bold text-xs my-2 text-red-400";
+                if (selectedButton) selectedButton.classList.add('border-red-500');
+            }
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length - 1) {
+                currentQuizIndex = 0;
+            } else {
+                currentQuizIndex++;
+            }
+            loadQuizQuestion();
+        }
+
+        function initStudioKeyboard() {
+            const kb = document.getElementById('virtual-keyboard');
+            if (!kb) return;
+            kb.innerHTML = '';
+            const notes = [
+                { name: 'Rast', freq: 392 },
+                { name: 'Dügâh', freq: 440 },
+                { name: 'Segah', freq: 493 },
+                { name: 'Çargâh', freq: 523 },
+                { name: 'Neva', freq: 587 },
+                { name: 'Hüseyni', freq: 659 },
+                { name: 'Evuç', freq: 698 },
+                { name: 'Gerdaniye', freq: 784 }
+            ];
+            notes.forEach(n => {
+                const btn = document.createElement('button');
+                btn.className = "p-3 rounded-xl bg-oriental-card border border-gold/40 hover:bg-gold/20 flex flex-col items-center justify-center active:scale-95 transition-all";
+                btn.innerHTML = `<span class="text-xs font-bold text-gold">${n.name}</span>`;
+                btn.onmousedown = () => playInstrumentNote(n.freq, 'ney', 0.8);
+                kb.appendChild(btn);
+            });
+        }
+
+        function changeStudioInstrument(val) {}
+        function changeStudioMakam(val) {}
+
+        // Initialize on Load
+        window.onload = () => {
+            loadUserProfile();
+            changeLanguage('tr');
+        };
+    </script>
+</body>
+</html>
